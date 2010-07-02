@@ -23,7 +23,7 @@ Detailed Documentation
     following commands:
 
         $ perl Makefile.PL
-        $ make manifpods
+        $ make manifypods
         $ man blib/man3/IPC::Pipeline.3pm
 
     This documentation is of course available via man(1) after installation in
