@@ -179,7 +179,7 @@ to multiplex the output and error streams.
         waitpid($pid, 1);
     }
 
-=head1 EXAMPLE ONE - INPUT AND OUTPUT
+=head1 EXAMPLE TWO - INPUT AND OUTPUT
 
 The following solution implements a true I/O stream filter as provided by any
 Unix-style shell.
