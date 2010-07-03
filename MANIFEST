@@ -1,11 +1,12 @@
 README
 LICENSE
+CHANGES
 COPYRIGHT
 MANIFEST
 MANIFEST.SKIP
 Makefile.PL
 lib/IPC/Pipeline.pm
 t/001_load.t
-t/branch_coverage.t
+t/handletypes.t
 t/pipeline.t
 META.yml                                 Module meta-data (added by MakeMaker)

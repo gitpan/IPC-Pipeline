@@ -10,6 +10,7 @@ WriteMakefile(
     ABSTRACT        => 'IPC::Open3-like interface providing shell-style pipelines in Perl',
 
     PREREQ_PM       => {
+        'POSIX' => 0,
         'Test::More' => 0
     }
 );

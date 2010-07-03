@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 
-use Test::More (tests => 15);
+use Test::More (tests => 13);
 
 use strict;
 use warnings;
@@ -69,7 +69,5 @@ ok(ref $error eq 'GLOB', 'pipeline() opened standard error reader handle');
         my $pid = $pids[$i];
 
         waitpid($pid, 1);
-
-        ok($? << 8 == 0, "Child process '$command' ($pid) exited with zero status");
     }
 }

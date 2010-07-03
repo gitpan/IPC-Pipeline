@@ -1,0 +1,16 @@
+IPC::Pipeline 0.3
+
+    A release to fix documentation which was inconsistent with the previous
+    implementation regarding the way the file handle positional parameters
+    were being handled.  This also fixes the code to allow receipt of file
+    typeglobs, numeric file descriptors, and the usual positional scalar
+    substitution method.  Note that an implicit dependency upon POSIX::dup2()
+    is now made if numeric file descriptors are passed, as a workaround to
+    undesirable multiple calls to the dup2() system call by Perl's open()
+    when used in the expected (but unexpectedly resultant) manner.
+
+    Some 80-column comment tweaks are also made in this release.
+
+IPC::Pipeline 0.2
+
+    Initial release, 2 June 2010.
