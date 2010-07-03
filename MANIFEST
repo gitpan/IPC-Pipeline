@@ -8,3 +8,4 @@ lib/IPC/Pipeline.pm
 t/001_load.t
 t/branch_coverage.t
 t/pipeline.t
+META.yml                                 Module meta-data (added by MakeMaker)
