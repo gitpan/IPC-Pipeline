@@ -1,3 +1,22 @@
+IPC::Pipeline 0.4
+
+    * Pare down superfluous bits of IPC::Pipeline
+
+    * Maximize unit test coverage, excluding any portions which test code
+      that would run in a subprocess
+
+    * Implicitly use POSIX module without an import() call
+
+    * Only list Test:: dependencies as build-time dependencies in
+      Makefile.PL
+
+    * Minor tweaks to code for style, consistency, and a small unchecked
+      exec() bug
+
+    * Implement support for executing CODE refs as parts of a pipeline
+
+    * Improve and reorganize documentation into smaller sections
+
 IPC::Pipeline 0.3
 
     A release to fix documentation which was inconsistent with the previous

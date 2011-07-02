@@ -1,5 +1,7 @@
 .hgignore
 ^\.hg
+.gitignore
+^\.git
 ^.*\.swp$
 ^blib
 ^Makefile$

@@ -6,17 +6,19 @@ use strict;
 use warnings;
 
 use IPC::Pipeline;
+use Symbol ();
 
 my @commands = (
     [qw/tr A-Ma-mN-Zn-z N-Zn-zA-Ma-m/],
     [qw/cut -d : -f 2/]
 );
 
-my @pids = pipeline(my ($in, $out, $error), @commands);
+my $err = Symbol::gensym();
+my @pids = pipeline(my ($in, $out), $err, @commands);
 
-ok(ref $in eq 'GLOB', 'pipeline() opened standard input writer handle');
-ok(ref $out eq 'GLOB', 'pipeline() opened standard output reader handle');
-ok(ref $error eq 'GLOB', 'pipeline() opened standard error reader handle');
+is(ref $in,  'GLOB', 'pipeline() opened standard input writer handle');
+is(ref $out, 'GLOB', 'pipeline() opened standard output reader handle');
+is(ref $err, 'GLOB', 'pipeline() opened standard error reader handle');
 
 {
     my $count = 0;
@@ -48,7 +50,8 @@ ok(ref $error eq 'GLOB', 'pipeline() opened standard error reader handle');
     }
 
     ok(eval {
-        close($in);
+        close $in;
+        return 1;
     }, 'Able to close pipeline input');
 
     foreach (keys %records) {
@@ -61,13 +64,8 @@ ok(ref $error eq 'GLOB', 'pipeline() opened standard error reader handle');
     }
 }
 
-{
-    close($out);
+close $out;
 
-    for (my $i=0; $i<scalar @commands; $i++) {
-        my $command = @{$commands[$i]}[0];
-        my $pid = $pids[$i];
-
-        waitpid($pid, 1);
-    }
+foreach my $pid (@pids) {
+    waitpid($pid, 0);
 }

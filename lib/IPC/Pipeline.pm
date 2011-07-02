@@ -3,75 +3,79 @@ package IPC::Pipeline;
 use strict;
 use warnings;
 
+use POSIX ();
+
 BEGIN {
     use Exporter    ();
-    use vars        qw/$VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS/;
+    use vars        qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
-    $VERSION        = '0.3';
-    @ISA            = qw/Exporter/;
-    @EXPORT         = qw/pipeline/;
+    $VERSION        = '0.4';
+    @ISA            = ('Exporter');
+    @EXPORT         = ('pipeline');
     @EXPORT_OK      = ();
     %EXPORT_TAGS    = ();
 }
 
-#
-# my @pids = pipeline(\*FIRST_CHLD_IN, \*LAST_CHLD_OUT, \*CHILDREN_ERROR,
-#     [qw/command1 args .../],
-#     [qw/command2/, @moreargs/],
-#     ...
-#     [qw/commandN/]
-# );
-#
-# First, second, and third arguments will be modified upon return to refer to
-# the read, write, and error ends of the command pipeline.  An array of process
-# IDs, in the order of specification at method invocation time, shall be
-# returned upon success.  Any exceptional conditions will cause a die() to be
-# thrown with the appropriate error information.  If called in scalar context,
-# the first pid will be returned only.  Will return undef if no command
-# arguments are passed.
-#
-# If file handle typeglobs or numeric file descriptors are passed in any of the
-# positional parameters, then they will be duplicated onto the the respective
-# file handles created during the process pipelining.
-#
-# Please note that any time numeric file descriptors are passed, an implicit
-# import of POSIX::dup2() is required as a workaround to Perl's native open()
-# function performing multiple dup2() calls when performing numeric file
-# descriptor duplication.  A better workaround may be used in a future release.
-#
-sub pipeline {
-    my @commands = @_[3..$#_];
+sub exec_filter {
+    my ($filter) = @_;
 
-    return undef unless scalar @commands;
+    if (ref($filter) eq 'CODE') {
+        exit $filter->();
+    } elsif (ref($filter) eq 'ARRAY') {
+        exec(@$filter) or die("Cannot exec(): $!");
+    }
+
+    die('Invalid filter');
+}
+
+sub pipeline {
+    my @filters = @_[3..$#_];
+
+    return undef unless @filters;
+
+    #
+    # Validate the filters and die early.
+    #
+    foreach my $filter (@filters) {
+        next if ref($filter) =~ /^CODE|ARRAY$/;
+
+        die('Filter passed is not a CODE reference or ARRAY containing command and arguments');
+    }
 
     #
     # Create the initial pipe for passing data into standard input to the first
-    # command passed; then, create the standard error pipe that will be used
-    # for all subsequent processes.
+    # filter passed.
     #
-    pipe my ($child_out, $in) or die('Unable to create a file handle pair for standard input piping');
-    pipe my ($error_out, $error_in) or die('Unable to create a file handle pair for standard error piping');
+    pipe my ($child_out, $in) or die('Cannot create a file handle pair for standard input piping');
 
-    my @pids = ();
+    #
+    # Only create a standard error pipe if a standard error file handle glob
+    # was passed in the 3rd argument position.
+    #
+    my ($error_out, $error_in);
 
-    foreach my $command (@commands) {
-        pipe my ($out, $child_in) or die('Unable to create a file handle pair for standard output piping');
+    if (defined $_[2]) {
+        pipe $error_out, $error_in or die('Cannot create a file handle pair for standard error piping');
+    }
+
+    my @pids;
+
+    foreach my $filter (@filters) {
+        pipe my ($out, $child_in) or die('Cannot create a file handle pair for standard output piping');
 
         my $pid = fork();
 
         if (!defined $pid) {
-            die $!;
+            die("Cannot fork(): $!");
         } elsif ($pid == 0) {
-            open(STDIN, '>&', $child_out) or die('Cannot dup2() last output fd to current child stdin');
-            open(STDOUT, '<&', $child_in) or die('Cannot dup2() last input fd to current child stdout');
-            open(STDERR, '<&', $error_in) or die('Cannot dup2() error pipe input to current child stderr');
+            open(STDIN, '<&', $child_out) or die('Cannot dup2() last output fd to current child stdin');
+            open(STDOUT, '>&', $child_in) or die('Cannot dup2() last input fd to current child stdout');
 
-            #
-            # Let Perl's death warnings percolate through in the event of a
-            # failure here, as we must use waitpid() to gather the status
-            # information from this child.
-            #
-            exec(@$command);
+            if (defined $_[2]) {
+                open(STDERR, '>&', $error_in) or die('Cannot dup2() error pipe input to current child stderr');
+            }
+
+            exec_filter($filter);
         }
 
         #
@@ -93,27 +97,13 @@ sub pipeline {
     # file descriptors for existing file handles are passed, an attempt will
     # be made to dup2() them as appropriate.
     #
-    # Real quickly, however, we need to make a runtime decision as to whether
-    # or not we need to import POSIX::dup2(), based on whether or not any
-    # numeric file descriptors were passed.  This is necessary because Perl's
-    # open() behavior causes multiple dup2() calls, resulting in a broken
-    # connection.
-    #
-    foreach (@_[0..2]) {
-        if (defined $_ && !ref $_) {
-            unless (defined(&dup2)) {
-                use POSIX qw/dup2/;
-                last;
-            }
-        }
-    }
 
     if (!defined $_[0]) {
         $_[0] = $in;
     } elsif (ref $_[0] eq 'GLOB') {
         open($_[0], '>&=', $in);
     } else {
-        dup2(fileno($in), $_[0]);
+        POSIX::dup2(fileno($in), $_[0]);
     }
 
     if (!defined $_[1]) {
@@ -121,7 +111,7 @@ sub pipeline {
     } elsif (ref $_[1] eq 'GLOB') {
         open($_[1], '<&=', $child_out);
     } else {
-        dup2(fileno($child_out), $_[1]);
+        POSIX::dup2(fileno($child_out), $_[1]);
     }
 
     if (!defined $_[2]) {
@@ -129,7 +119,7 @@ sub pipeline {
     } elsif (ref $_[2] eq 'GLOB') {
         open($_[2], '<&=', $error_out);
     } else {
-        dup2(fileno($error_out), $_[2]);
+        POSIX::dup2(fileno($error_out), $_[2]);
     }
 
     #
@@ -153,17 +143,18 @@ IPC::Pipeline - Create a shell-like pipeline of many running commands
     use IPC::Pipeline;
 
     my @pids = pipeline(\*FIRST_CHLD_IN, \*LAST_CHLD_OUT, \*CHILDREN_ERR,
-        [qw/command1/],
-        [qw/command2/],
+        [qw(filter1 args)],
+        sub { filter2(); return 0 },
+        [qw(filter3 args)],
         ...
-        [qw/commandN/]
+        [qw(commandN args)]
     );
 
     ... do stuff ...
 
-    my @statuses = map {
+    my %statuses = map {
         waitpid($_, 0);
-        $? >> 8;
+        $_ => ($? >> 8);
     } @pids;
 
 =head1 DESCRIPTION
@@ -171,19 +162,38 @@ IPC::Pipeline - Create a shell-like pipeline of many running commands
 Similar in calling convention to IPC::Open3, pipeline() spawns N children,
 connecting the first child to the FIRST_CHLD_IN handle, the final child to
 LAST_CHLD_OUT, and each child to a shared standard error handle, CHILDREN_ERR.
-Each subsequent command specified causes a new process to be fork()ed.  Each
+Each subsequent filter specified causes a new process to be fork()ed.  Each
 process is linked to the last with a file descriptor pair created by pipe(),
 using dup2() to chain each process' standard input to the last standard output.
-The commands specified in the anonymous arrays passed are started in the child
-processes with a simple exec() call.
+
+=head2 FEATURES
+
+IPC::Pipeline accepts external commands to be executed in the form of ARRAY
+references containing the command name and each argument, as well as CODE
+references that are executed within their own processes as well, each as
+independent parts of a pipeline.
+
+=head3 ARRAY REFS
+
+When a filter is passed in the form of an ARRAY containing an external system
+command, each such item is executed in its own subprocess in the following
+manner.
+
+    exec(@$filter) or die("Cannot exec(): $!");
+
+=head3 CODE REFS
+
+When a filter is passed in the form of a CODE ref, each such item is executed in
+its own subprocess in the following way.
+
+    exit $filter->();
+
+=head2 BEHAVIOR
 
 If fileglobs or numeric file descriptors are passed in any of the three
 positional parameters, then they will be duplicated onto the file handles 
 allocated as a result of the process pipelining.  Otherwise, simple scalar
 assignment will be performed.
-
-Please be advised that any usage of numeric file descriptors will result in an
-implicit import of POSIX::dup2() at runtime.
 
 Like IPC::Open3, pipeline() returns immediately after spawning the process
 chain, though differing slightly in that the IDs of each process is returned
@@ -196,10 +206,15 @@ sysread() and syswrite() calls.  Using this to handle reading standard output
 and error from the children is ideal, as blocking and buffering considerations
 are alleviated.
 
+=head2 CAVEATS
+
 If any child process dies prematurely, or any of the piped file handles are
 closed for any reason, the calling process inherits the kernel behavior of
 receiving a SIGPIPE, which requires the installation of a signal handler for
 appropriate recovery.
+
+Please be advised that any usage of numeric file descriptors will result in an
+implicit import of POSIX::dup2() at runtime.
 
 =head1 EXAMPLE ONE - OUTPUT ONLY
 
@@ -212,19 +227,19 @@ to multiplex the output and error streams.
     my @paths = qw(/some /random /locations);
 
     my @pids = pipeline(my ($in, $out), undef,
-        [qw/tar pcf -/, @paths],
-        [qw/gzip/]
+        [qw(tar pcf -), @paths],
+        ['gzip']
     );
 
     open(my $fh, '>', 'file.tar.gz');
-    close($in);
+    close $in;
 
     while (my $len = sysread($out, my $buf, 512)) {
         syswrite($fh, $buf, $len);
     }
 
-    close($fh);
-    close($out);
+    close $fh;
+    close $out;
 
     #
     # We may need to wait for the children to die in some extraordinary
@@ -242,8 +257,8 @@ Unix-style shell.
     use IPC::Pipeline;
 
     my @pids = pipeline(my ($in, $out), undef,
-        [qw/tr A-Ma-mN-Zn-z N-Zn-zA-Ma-m/],
-        [qw/cut -d/, ':', qw/-f 2/]
+        [qw(tr A-Ma-mN-Zn-z N-Zn-zA-Ma-m)],
+        [qw(cut -d), ':', qw(-f 2)]
     );
 
     my @records = qw(
@@ -256,17 +271,38 @@ Unix-style shell.
         print $in $record ."\n";
     }
 
-    close($in);
+    close $in;
 
     while (my $len = sysread($out, my $buf, 512)) {
         syswrite(STDOUT, $buf, $len);
     }
 
-    close($out);
+    close $out;
 
     foreach my $pid (@pids) {
         waitpid($pid, 1);
     }
+
+=head1 EXAMPLE THREE - MIXING COMMANDS AND CODEREFS
+
+The following solution demonstrates the ability of IPC::Pipeline to execute CODE
+references in the midst of a pipeline.
+
+    use IPC::Pipeline;
+
+    my @pids = pipeline(my ($in, $out), undef,
+        sub { print 'cats'; return 0 },
+        [qw(tr acst lbhe)]
+    );
+
+    close $in;
+
+    while (my $line = readline($out)) {
+        chomp $line;
+        print "Got '$line'\n";
+    }
+
+    close $out;
 
 =head1 SEE ALSO
 
@@ -282,4 +318,5 @@ It should be mentioned that mst's IO::Pipeline has very little in common with IP
 
 =head1 COPYRIGHT
 
-Copyright 2010, wrath@cpan.org.  Released under the terms of the MIT license.
+Copyright 2011, Erin Schönhals <wrath@cpan.org>.  Released under the terms of
+the MIT license.

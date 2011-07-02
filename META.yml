@@ -1,12 +1,26 @@
-# http://module-build.sourceforge.net/META-spec.html
-#XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
-name:         IPC-Pipeline
-version:      0.3
-version_from: lib/IPC/Pipeline.pm
-installdirs:  site
+--- #YAML:1.0
+name:               IPC-Pipeline
+version:            0.4
+abstract:           IPC::Open3-like interface providing shell-style pipelines in Perl
+author:
+    - Erin Schönhals <wrath@cpan.org>
+license:            mit
+distribution_type:  module
+configure_requires:
+    ExtUtils::MakeMaker:  0
+build_requires:
+    BSD::Resource:    0
+    Test::Exception:  0
+    Test::More:       0
 requires:
-    POSIX:                         0
-    Test::More:                    0
-
-distribution_type: module
-generated_by: ExtUtils::MakeMaker version 6.30
+    BSD::Resource:    0
+    Test::Exception:  0
+    Test::More:       0
+no_index:
+    directory:
+        - t
+        - inc
+generated_by:       ExtUtils::MakeMaker version 6.55_02
+meta-spec:
+    url:      http://module-build.sourceforge.net/META-spec-v1.4.html
+    version:  1.4
