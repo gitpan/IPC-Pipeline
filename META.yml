@@ -9,11 +9,9 @@ distribution_type:  module
 configure_requires:
     ExtUtils::MakeMaker:  0
 build_requires:
-    BSD::Resource:    0
     Test::Exception:  0
     Test::More:       0
 requires:
-    BSD::Resource:    0
     Test::Exception:  0
     Test::More:       0
 no_index:

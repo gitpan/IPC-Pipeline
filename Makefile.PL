@@ -11,7 +11,6 @@ WriteMakefile(
     'VERSION_FROM' => 'lib/IPC/Pipeline.pm',
 
     'BUILD_REQUIRES' => {
-        'BSD::Resource'   => 0,
         'Test::More'      => 0,
         'Test::Exception' => 0
     }
