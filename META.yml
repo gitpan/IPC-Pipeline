@@ -1,24 +1,22 @@
---- #YAML:1.0
-name:               IPC-Pipeline
-version:            0.4
-abstract:           IPC::Open3-like interface providing shell-style pipelines in Perl
+---
+abstract: 'IPC::Open3-like interface providing shell-style pipelines in Perl'
 author:
-    - Erin Schönhals <wrath@cpan.org>
-license:            mit
-distribution_type:  module
-configure_requires:
-    ExtUtils::MakeMaker:  0
+  - 'Erin Schönhals erin@cpanel.net>'
 build_requires:
-    Test::Exception:  0
-    Test::More:       0
-requires:
-    Test::Exception:  0
-    Test::More:       0
-no_index:
-    directory:
-        - t
-        - inc
-generated_by:       ExtUtils::MakeMaker version 6.55_02
+  Test::Exception: 0
+  Test::More: 0
+configure_requires:
+  ExtUtils::MakeMaker: 0
+dynamic_config: 1
+generated_by: 'ExtUtils::MakeMaker version 6.59, CPAN::Meta::Converter version 2.112150'
+license: mit
 meta-spec:
-    url:      http://module-build.sourceforge.net/META-spec-v1.4.html
-    version:  1.4
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: IPC-Pipeline
+no_index:
+  directory:
+    - t
+    - inc
+requires: {}
+version: 0.5
