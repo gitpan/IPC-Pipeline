@@ -1,12 +1,12 @@
 {
    "abstract" : "IPC::Open3-like interface providing shell-style pipelines in Perl",
    "author" : [
-      "Erin Schönhals erin@cpanel.net>"
+      "Erin Schoenhals <erin@cpanel.net>"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "ExtUtils::MakeMaker version 6.59, CPAN::Meta::Converter version 2.112150",
+   "generated_by" : "ExtUtils::MakeMaker version 6.62, CPAN::Meta::Converter version 2.112150",
    "license" : [
-      "mit"
+      "perl_5"
    ],
    "meta-spec" : {
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
@@ -22,7 +22,6 @@
    "prereqs" : {
       "build" : {
          "requires" : {
-            "Test::Exception" : 0,
             "Test::More" : 0
          }
       },
@@ -32,9 +31,11 @@
          }
       },
       "runtime" : {
-         "requires" : {}
+         "requires" : {
+            "perl" : "5.008000"
+         }
       }
    },
    "release_status" : "stable",
-   "version" : "0.5"
+   "version" : "0.6"
 }
