@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 
-# Copyright (c) 2012, cPanel, Inc.
+# Copyright (c) 2014, cPanel, Inc.
 # All rights reserved.
 # http://cpanel.net/
 #
@@ -16,15 +16,15 @@ use IPC::Pipeline;
 use Symbol ();
 
 my @commands = (
-    [qw/tr A-Ma-mN-Zn-z N-Zn-zA-Ma-m/],
-    [qw/cut -d : -f 2/]
+    [qw(tr aiueo uaioe)],
+    [qw(cut -d : -f 2)]
 );
 
 my @pids = pipeline( my ( $in, $out, $err ), @commands );
 
-is( ref $in,  'GLOB', 'pipeline() opened standard input writer handle' );
-is( ref $out, 'GLOB', 'pipeline() opened standard output reader handle' );
-is( ref $err, 'GLOB', 'pipeline() opened standard error reader handle' );
+is( ref $in  => 'GLOB', 'pipeline() opened standard input writer handle' );
+is( ref $out => 'GLOB', 'pipeline() opened standard output reader handle' );
+is( ref $err => 'GLOB', 'pipeline() opened standard error reader handle' );
 
 {
     my $count    = 0;
@@ -39,14 +39,14 @@ is( ref $err, 'GLOB', 'pipeline() opened standard error reader handle' );
         $count++;
     }
 
-    die unless ok( $count == $expected, "pipeline() returned $count nonzero pids (expected $expected)" );
+    die unless is( $count => $expected, "pipeline() returned $count nonzero pids (expected $expected)" );
 }
 
 {
     my %records = (
-        'foo:bar:baz'    => 'one',
-        'eins:zwei:drei' => 'mjrv',
-        'one:two:three'  => 'gjb'
+        'foo:bar:baz'    => 'bur',
+        'eins:zwei:drei' => 'zwoa',
+        'one:two:three'  => 'twe'
     );
 
     foreach ( keys %records ) {
@@ -67,7 +67,7 @@ is( ref $err, 'GLOB', 'pipeline() opened standard error reader handle' );
         my $line = readline($out);
         chomp($line);
 
-        ok( $line eq $expected, "Wrote '$_' to pipeline, received '$line' (expected '$expected')" );
+        is( $line => $expected, "Wrote '$_' to pipeline, received '$line' (expected '$expected')" );
     }
 }
 

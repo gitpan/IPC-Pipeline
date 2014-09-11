@@ -1,6 +1,6 @@
 package IPC::Pipeline;
 
-# Copyright (c) 2012, cPanel, Inc.
+# Copyright (c) 2014, cPanel, Inc.
 # All rights reserved.
 # http://cpanel.net/
 #
@@ -16,9 +16,9 @@ BEGIN {
     use Exporter ();
     use vars qw( $VERSION @ISA @EXPORT );
 
-    $VERSION = '0.9';
-    @ISA     = ('Exporter');
-    @EXPORT  = ('pipeline');
+    our $VERSION = '1.0_0001';
+    our @ISA     = ('Exporter');
+    our @EXPORT  = ('pipeline');
 }
 
 sub exec_filter {
@@ -329,9 +329,13 @@ B<IPC::Pipeline>.
 
 =back
 
+=head1 AUTHOR
+
+Written by Xan Tronix <xan@cpan.org>
+
 =head1 COPYRIGHT
 
-Copyright (c) 2012, cPanel, Inc.
+Copyright (c) 2014, cPanel, Inc.
 All rights reserved.
 http://cpanel.net/
 

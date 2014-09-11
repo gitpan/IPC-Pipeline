@@ -1,4 +1,4 @@
-# Copyright (c) 2012, cPanel, Inc.
+# Copyright (c) 2014, cPanel, Inc.
 # All rights reserved.
 # http://cpanel.net/
 #
@@ -15,13 +15,19 @@ if ( $^O =~ /^MSWin/ ) {
 }
 
 WriteMakefile(
-    'NAME'         => 'IPC::Pipeline',
-    'AUTHOR'       => 'Erin Schoenhals <erin@cpanel.net>',
-    'ABSTRACT'     => 'IPC::Open3-like interface providing shell-style pipelines in Perl',
-    'LICENSE'      => 'perl',
-    'VERSION_FROM' => 'lib/IPC/Pipeline.pm',
-
+    'NAME'             => 'IPC::Pipeline',
+    'AUTHOR'           => 'Erin Schoenhals <erin@cpanel.net>',
+    'ABSTRACT'         => 'IPC::Open3-like interface providing shell-style pipelines in Perl',
+    'LICENSE'          => 'perl',
+    'VERSION_FROM'     => 'lib/IPC/Pipeline.pm',
     'MIN_PERL_VERSION' => '5.8.0',
-
-    'BUILD_REQUIRES' => { 'Test::More' => 0 }
+    'BUILD_REQUIRES'   => { 'Test::More' => 0 },
+    'META_MERGE'       => {
+        'meta-spec' => { 'version' => 2 },
+        'resources' => {
+            'type' => 'git',
+            'url'  => 'git://github.com/xantronix/IPC-Pipeline.git',
+            'web'  => 'https://github.com/xantronix/IPC-Pipeline'
+        },
+    }
 );
