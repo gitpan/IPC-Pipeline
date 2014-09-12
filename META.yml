@@ -1,7 +1,7 @@
 ---
 abstract: 'IPC::Open3-like interface providing shell-style pipelines in Perl'
 author:
-  - 'Erin Schoenhals <erin@cpanel.net>'
+  - 'Xan Tronix <xan@cpan.org>'
 build_requires:
   Test::More: '0'
 configure_requires:
@@ -23,4 +23,4 @@ resources:
   Type: git
   Url: git://github.com/xantronix/IPC-Pipeline.git
   Web: https://github.com/xantronix/IPC-Pipeline
-version: 1.0_0001
+version: '1.0'

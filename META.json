@@ -1,7 +1,7 @@
 {
    "abstract" : "IPC::Open3-like interface providing shell-style pipelines in Perl",
    "author" : [
-      "Erin Schoenhals <erin@cpanel.net>"
+      "Xan Tronix <xan@cpan.org>"
    ],
    "dynamic_config" : 1,
    "generated_by" : "ExtUtils::MakeMaker version 6.94, CPAN::Meta::Converter version 2.140640",
@@ -36,11 +36,11 @@
          }
       }
    },
-   "release_status" : "testing",
+   "release_status" : "stable",
    "resources" : {
       "x_type" : "git",
       "x_url" : "git://github.com/xantronix/IPC-Pipeline.git",
       "x_web" : "https://github.com/xantronix/IPC-Pipeline"
    },
-   "version" : "1.0_0001"
+   "version" : "1.0"
 }

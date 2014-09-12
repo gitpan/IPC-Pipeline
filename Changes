@@ -1,14 +1,19 @@
-IPC::Pipeline 0.9
+Version 1.0
 
-    * Resolves ticket https://rt.cpan.org/Public/Bug/Display.html?id=88229
+    * Resolve ticket https://rt.cpan.org/Public/Bug/Display.html?id=95917 --
+      LANG-related CPANTs failures in t/pipeline.t
 
-    * Fix functionality with 5.19+.
+Version 0.9
 
-IPC::Pipeline 0.8
+    * Resolve ticket https://rt.cpan.org/Public/Bug/Display.html?id=88229
 
-    * Resolves ticket https://rt.cpan.org/Ticket/Display.html?id=82824
+    * Fix functionality with 5.19+
 
-IPC::Pipeline 0.7
+Version 0.8
+
+    * Resolve ticket https://rt.cpan.org/Ticket/Display.html?id=82824
+
+Version 0.7
 
     * No functional changes
 
@@ -18,7 +23,7 @@ IPC::Pipeline 0.7
 
     * Require 5.8.1, not 5.8.0
 
-IPC::Pipeline 0.6
+Version 0.6
 
     * Ensure unit tests pass on Perl 5.8; declare a dependency on that version
       of Perl in Makefile.PL
@@ -37,11 +42,11 @@ IPC::Pipeline 0.6
       future Perl 5.6 support, as Test::Exception does not build under those
       circumstances currently
 
-IPC::Pipeline 0.5
+Version 0.5
 
     * Reassigned to the Perl artistic license under the cPanel copyright.
 
-IPC::Pipeline 0.4
+Version 0.4
 
     * Pare down superfluous bits of IPC::Pipeline
 
@@ -60,7 +65,7 @@ IPC::Pipeline 0.4
 
     * Improve and reorganize documentation into smaller sections
 
-IPC::Pipeline 0.3
+Version 0.3
 
     A release to fix documentation which was inconsistent with the previous
     implementation regarding the way the file handle positional parameters
@@ -73,6 +78,6 @@ IPC::Pipeline 0.3
 
     Some 80-column comment tweaks are also made in this release.
 
-IPC::Pipeline 0.2
+Version 0.2
 
     Initial release, 2 June 2010.

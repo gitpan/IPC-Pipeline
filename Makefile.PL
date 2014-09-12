@@ -16,7 +16,7 @@ if ( $^O =~ /^MSWin/ ) {
 
 WriteMakefile(
     'NAME'             => 'IPC::Pipeline',
-    'AUTHOR'           => 'Erin Schoenhals <erin@cpanel.net>',
+    'AUTHOR'           => 'Xan Tronix <xan@cpan.org>',
     'ABSTRACT'         => 'IPC::Open3-like interface providing shell-style pipelines in Perl',
     'LICENSE'          => 'perl',
     'VERSION_FROM'     => 'lib/IPC/Pipeline.pm',
